@@ -1,4 +1,4 @@
-# Langchain simple Agents comoponets 
+# Langchain simple Agents comoponets - Tool Agent
     #  1. Models  
     #  2. Tools   - RAG Store, Python functions , APIs,data bases, files store (MCP) and etc.
     #  3. Prompt
@@ -25,23 +25,23 @@ from langchain.agents import (
 )
 # Import Pydantic for data validation and settings management
 from pydantic.v1 import BaseModel, Field
-from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage 
 
-from langchain import hub
+from langchain import hub # for prompts template
 
-from langchain.memory import ChatMessageHistory
+from langchain.memory import ChatMessageHistory  #  for message history
 
-from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory   #  for agent executor with memory
 
-from langchain_community.tools import YouTubeSearchTool
+from langchain_community.tools import YouTubeSearchTool  #  youtube search tool
 
 
 # STEP 2 - Choose the LLM - Langchain goole-gena
 from langchain.chat_models import init_chat_model
-llm = init_chat_model(model="gemini-2.5-flash", model_provider="google_genai")
+llm = init_chat_model(model="gemini-2.5-pro", model_provider="google_genai")
 
 # STEP 2.1 - Test the lLM with simple prompt
-prompt = "Who are you?"
+prompt = "What is the current stock price of Apple and Tesla"
 response=llm.invoke(prompt)
 print(response.content)
 
@@ -52,6 +52,7 @@ youtube = YouTubeSearchTool(
 # Define the input schema for the get_stock_price tool
 class StockPriceInput(BaseModel):
     ticker: str = Field(description="The stock ticker symbol (e.g., 'AAPL' for Apple).")
+    
 
 # Function to Get Stock Price
 def get_stock_price(ticker: str) -> dict:
@@ -186,7 +187,7 @@ response = agent_executor.invoke({"input": "How the stock market works?"})
 # Print  the response from the agent
 print("response:", response)
 
-### ---------------###
+# ### ---------------###
 
 # STEP 7: Agent with memory
 prompt = hub.pull("hwchase17/react-chat")
@@ -209,7 +210,7 @@ agent_with_chat_history = RunnableWithMessageHistory(
 )
 config={"configurable": {"session_id": "test-session"}}
 # Run the agent with a test query
-response = agent_with_chat_history.invoke({"input": "Hi , My name is Ve nkat?"}, config=config)
+response = agent_with_chat_history.invoke({"input": "Hi , My name is Venkat?"}, config=config)
 # Print  the response from the agent
 print("response:", response)
 response = agent_with_chat_history.invoke({"input": "What is my name?"}, config=config)
